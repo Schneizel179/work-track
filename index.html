@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>WorkTrack Pro | Suivi d'heures facturables</title>
+    <title>WorkTrack Pro | Tableaux & gestion d'heures</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -14,51 +14,72 @@
             box-sizing: border-box;
         }
         body {
-            background: radial-gradient(circle at 10% 20%, #e2e8f0, #cbd5e1);
+            background: radial-gradient(circle at 10% 20%, #d9e2ec, #bcc9d6);
             font-family: 'Inter', sans-serif;
-            padding: 2rem 1rem;
+            padding: 2rem 1.5rem;
             min-height: 100vh;
         }
-        /* Glassmorphism container */
-        .glass-container {
+        /* Glass container principal */
+        .glass-main {
             max-width: 1400px;
             margin: 0 auto;
             background: rgba(255,255,255,0.25);
-            backdrop-filter: blur(12px);
+            backdrop-filter: blur(14px);
             border-radius: 48px;
             padding: 2rem;
             box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.4);
         }
         h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
-            background: linear-gradient(135deg, #1e293b, #334155);
+            background: linear-gradient(135deg, #0f172a, #2d3a5e);
             background-clip: text;
             -webkit-background-clip: text;
             color: transparent;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
+            margin-bottom: 0.2rem;
         }
-        .sub {
-            color: #334155;
+        .subhead {
+            color: #2c3e5c;
+            margin-bottom: 2rem;
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+        }
+        /* Stats en haut */
+        .stats-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
             margin-bottom: 2rem;
         }
-        /* Grille principale */
-        .dashboard {
+        .stat-glass {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 28px;
+            padding: 0.8rem 1.5rem;
+            flex: 1;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.6);
+        }
+        .stat-glass span:first-child { font-size: 0.7rem; text-transform: uppercase; color: #1e293b; }
+        .stat-glass .number { font-size: 1.8rem; font-weight: 800; color: #0f172a; }
+        /* Grid 2 colonnes pour projets et timer */
+        .two-col {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            grid-template-columns: 1fr 1fr;
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
+        /* Cartes glass */
         .glass-card {
             background: rgba(255,255,255,0.5);
             backdrop-filter: blur(4px);
             border-radius: 32px;
-            padding: 1.5rem;
+            padding: 1.2rem;
             border: 1px solid rgba(255,255,255,0.6);
-            transition: 0.2s;
         }
         .glass-card h2 {
             font-size: 1.2rem;
@@ -69,195 +90,164 @@
             border-bottom: 1px solid rgba(0,0,0,0.1);
             padding-bottom: 0.5rem;
         }
-        /* Formulaires */
-        input, select, button {
+        /* Tableaux */
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+        table {
             width: 100%;
-            padding: 0.7rem;
-            margin-bottom: 0.8rem;
+            border-collapse: collapse;
+            background: rgba(255,255,255,0.4);
             border-radius: 24px;
+            overflow: hidden;
+        }
+        th, td {
+            text-align: left;
+            padding: 0.7rem 0.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        th {
+            background: rgba(30,41,59,0.7);
+            color: white;
+        }
+        .project-color {
+            width: 24px;
+            height: 24px;
+            border-radius: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        button, select, input {
+            padding: 0.5rem 0.8rem;
+            border-radius: 28px;
             border: 1px solid rgba(255,255,255,0.8);
-            background: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.8);
             font-family: inherit;
         }
         button {
             background: #1e293b;
             color: white;
-            font-weight: 600;
+            font-weight: 500;
             cursor: pointer;
             transition: 0.2s;
             border: none;
         }
-        button:hover {
-            background: #334155;
-        }
-        .btn-danger {
-            background: #b91c1c;
-        }
-        .btn-danger:hover {
-            background: #991b1b;
-        }
-        .btn-secondary {
-            background: #475569;
-        }
-        /* Liste projets */
-        .project-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255,255,255,0.6);
-            border-radius: 28px;
-            padding: 0.7rem 1rem;
-            margin-bottom: 0.5rem;
-        }
-        .project-color {
-            width: 24px;
-            height: 24px;
-            border-radius: 24px;
-            display: inline-block;
-            margin-right: 0.5rem;
-        }
-        .delete-proj {
-            color: #b91c1c;
-            cursor: pointer;
-        }
-        /* Timer */
+        button:hover { background: #2d3a5e; }
+        .btn-danger { background: #b91c1c; }
+        .btn-danger:hover { background: #991b1b; }
+        .btn-secondary { background: #475569; }
         .timer-display {
-            font-size: 2.5rem;
-            font-weight: 800;
-            text-align: center;
+            font-size: 2rem;
             font-family: monospace;
-            margin: 0.5rem 0;
-        }
-        .timer-buttons {
-            display: flex;
-            gap: 0.5rem;
-        }
-        /* Tableau */
-        .table-wrapper {
-            overflow-x: auto;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            text-align: left;
-            padding: 0.8rem 0.5rem;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-        .delete-session {
-            color: #b91c1c;
-            cursor: pointer;
-        }
-        .stats {
-            display: flex;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 1rem;
-            margin-top: 1rem;
-        }
-        .stat-badge {
+            text-align: center;
             background: rgba(0,0,0,0.7);
             color: white;
-            padding: 0.5rem 1rem;
+            padding: 0.5rem;
             border-radius: 40px;
-            font-weight: 600;
+            margin: 0.5rem 0;
         }
-        canvas {
-            max-height: 200px;
-            margin-top: 1rem;
-        }
-        @media (max-width: 700px) {
-            .glass-container { padding: 1rem; }
+        .flex-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        .chart-container { max-width: 260px; margin: 1rem auto; }
+        @media (max-width: 800px) {
+            .two-col { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
         }
     </style>
 </head>
 <body>
-<div class="glass-container">
-    <h1><i class="fas fa-stopwatch"></i> WorkTrack Pro</h1>
-    <div class="sub">Suivi d'heures, timer intégré, export Excel</div>
+<div class="glass-main">
+    <h1><i class="fas fa-chalkboard-user"></i> WorkTrack Pro</h1>
+    <div class="subhead">Tableaux de bord, projets & sessions facturables</div>
 
-    <div class="dashboard">
-        <!-- Colonne 1 : Projets -->
+    <!-- Stats rapides -->
+    <div class="stats-row">
+        <div class="stat-glass"><span>Total heures</span><div class="number" id="statHours">0</div></div>
+        <div class="stat-glass"><span>Revenu total</span><div class="number" id="statRevenue">0 €</div></div>
+        <div class="stat-glass"><span>Projets</span><div class="number" id="statProjects">0</div></div>
+        <div class="stat-glass"><span>Sessions</span><div class="number" id="statSessions">0</div></div>
+    </div>
+
+    <div class="two-col">
+        <!-- GAUCHE : Tableau des projets + formulaire -->
         <div class="glass-card">
-            <h2><i class="fas fa-folder"></i> Projets</h2>
-            <input type="text" id="projName" placeholder="Nom du projet">
-            <input type="number" id="projRate" placeholder="Taux horaire (€)" step="0.01">
-            <input type="color" id="projColor" value="#3b82f6">
-            <button id="addProjBtn">➕ Ajouter projet</button>
-            <div id="projList"></div>
+            <h2><i class="fas fa-briefcase"></i> Projets</h2>
+            <div class="table-wrapper">
+                <table id="projectsTable">
+                    <thead><tr><th>Nom</th><th>Taux/h</th><th>Couleur</th><th></th></tr></thead>
+                    <tbody id="projectsTableBody"></tbody>
+                </table>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.8rem;">
+                <input type="text" id="newProjName" placeholder="Nom projet" style="flex:2">
+                <input type="number" id="newProjRate" placeholder="Taux (€)" step="0.01" style="flex:1">
+                <input type="color" id="newProjColor" value="#3b82f6" style="width: 50px;">
+                <button id="addProjectBtn">➕ Ajouter</button>
+            </div>
         </div>
 
-        <!-- Colonne 2 : Timer + ajout session rapide -->
+        <!-- DROITE : Timer + ajout session rapide -->
         <div class="glass-card">
             <h2><i class="fas fa-hourglass-half"></i> Chronomètre</h2>
             <div class="timer-display" id="timerDisplay">00:00:00</div>
-            <div class="timer-buttons">
-                <button id="timerStart">Démarrer</button>
-                <button id="timerPause">Pause</button>
-                <button id="timerReset">Réinitialiser</button>
+            <div class="flex-btns">
+                <button id="timerStart">▶ Démarrer</button>
+                <button id="timerPause">⏸ Pause</button>
+                <button id="timerReset">🔄 Reset</button>
             </div>
-            <select id="sessionProjectTimer">
-                <option value="">-- Projet --</option>
+            <select id="timerProjectSelect" style="width:100%; margin: 0.8rem 0;">
+                <option value="">-- Choisir un projet --</option>
             </select>
-            <button id="saveTimerSession">💾 Enregistrer cette durée</button>
+            <button id="saveTimerSessionBtn">💾 Enregistrer la durée</button>
             <hr style="margin: 1rem 0;">
             <h2><i class="fas fa-plus-circle"></i> Session manuelle</h2>
-            <input type="date" id="manualDate">
-            <select id="manualProject"></select>
-            <input type="number" id="manualHours" placeholder="Durée (heures)" step="0.5">
-            <input type="text" id="manualNotes" placeholder="Notes (option)">
-            <button id="addManualBtn">✅ Ajouter</button>
-        </div>
-
-        <!-- Colonne 3 : Statistiques & reset -->
-        <div class="glass-card">
-            <h2><i class="fas fa-chart-simple"></i> Synthèse</h2>
-            <div class="stats">
-                <div class="stat-badge"><i class="fas fa-clock"></i> <span id="totalHours">0</span> h</div>
-                <div class="stat-badge"><i class="fas fa-euro-sign"></i> <span id="totalRevenue">0</span> €</div>
-                <div class="stat-badge"><i class="fas fa-briefcase"></i> <span id="projCount">0</span> projets</div>
-            </div>
-            <canvas id="hoursChart" width="300" height="200"></canvas>
-            <button id="resetAllDataBtn" class="btn-danger" style="margin-top: 1rem;"><i class="fas fa-trash"></i> Réinitialiser tout</button>
-            <button id="exportCsvBtn" class="btn-secondary" style="margin-top: 0.5rem;"><i class="fas fa-file-excel"></i> Exporter CSV (Excel)</button>
+            <input type="date" id="manualDate" style="width:100%; margin-bottom:0.5rem;">
+            <select id="manualProjectSelect" style="width:100%; margin-bottom:0.5rem;"></select>
+            <input type="number" id="manualHours" placeholder="Durée (heures)" step="0.5" style="width:100%; margin-bottom:0.5rem;">
+            <input type="text" id="manualNotes" placeholder="Notes" style="width:100%; margin-bottom:0.5rem;">
+            <button id="addManualSessionBtn">✅ Ajouter session</button>
         </div>
     </div>
 
-    <!-- Tableau des sessions -->
-    <div class="glass-card" style="margin-top: 0;">
-        <h2><i class="fas fa-history"></i> Historique des sessions</h2>
+    <!-- Graphique + tableau des sessions -->
+    <div class="glass-card" style="margin-bottom: 1rem;">
+        <h2><i class="fas fa-chart-pie"></i> Répartition des heures</h2>
+        <div class="chart-container"><canvas id="hoursChart" width="300" height="200"></canvas></div>
+    </div>
+
+    <div class="glass-card">
+        <h2><i class="fas fa-table-list"></i> Historique des sessions</h2>
         <div class="table-wrapper">
             <table id="sessionsTable">
-                <thead><tr><th>Date</th><th>Projet</th><th>Durée</th><th>Revenu</th><th>Notes</th><th></th></tr></thead>
-                <tbody id="sessionsList"></tbody>
+                <thead><tr><th>Date</th><th>Projet</th><th>Durée (h)</th><th>Revenu</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="sessionsTableBody"></tbody>
             </table>
+        </div>
+        <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+            <button id="resetAllBtn" class="btn-danger"><i class="fas fa-trash"></i> Réinitialiser tout</button>
+            <button id="exportCsvBtn" class="btn-secondary"><i class="fas fa-file-excel"></i> Exporter CSV (Excel)</button>
         </div>
     </div>
 </div>
 
 <script>
-    // ---------- DONNEES ----------
+    // ---------- DATA ----------
     let projects = [];
     let sessions = [];
     let chartInstance = null;
-    let timerInterval = null;
     let timerSeconds = 0;
+    let timerInterval = null;
 
-    // DOM elements
-    const projListDiv = document.getElementById('projList');
-    const sessionProjectTimer = document.getElementById('sessionProjectTimer');
-    const manualProject = document.getElementById('manualProject');
-    const totalHoursSpan = document.getElementById('totalHours');
-    const totalRevenueSpan = document.getElementById('totalRevenue');
-    const projCountSpan = document.getElementById('projCount');
-    const sessionsTbody = document.getElementById('sessionsList');
-    const timerDisplay = document.getElementById('timerDisplay');
-    const addProjBtn = document.getElementById('addProjBtn');
-    const addManualBtn = document.getElementById('addManualBtn');
-    const saveTimerBtn = document.getElementById('saveTimerSession');
-    const resetAllBtn = document.getElementById('resetAllDataBtn');
-    const exportBtn = document.getElementById('exportCsvBtn');
+    // DOM refs
+    const projectsTbody = document.getElementById('projectsTableBody');
+    const sessionsTbody = document.getElementById('sessionsTableBody');
+    const timerProjectSelect = document.getElementById('timerProjectSelect');
+    const manualProjectSelect = document.getElementById('manualProjectSelect');
+    const statHours = document.getElementById('statHours');
+    const statRevenue = document.getElementById('statRevenue');
+    const statProjects = document.getElementById('statProjects');
+    const statSessions = document.getElementById('statSessions');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
 
     // Load / Save
     function loadData() {
@@ -274,21 +264,19 @@
         localStorage.setItem('wt_sessions', JSON.stringify(sessions));
     }
 
-    // Ajout projet
+    // Projets
     function addProject() {
-        const name = document.getElementById('projName').value.trim();
-        const rate = parseFloat(document.getElementById('projRate').value);
-        const color = document.getElementById('projColor').value;
-        if(!name) { alert("Nom requis"); return; }
+        const name = document.getElementById('newProjName').value.trim();
+        const rate = parseFloat(document.getElementById('newProjRate').value);
+        const color = document.getElementById('newProjColor').value;
+        if(!name) { alert("Nom du projet"); return; }
         if(isNaN(rate) || rate <= 0) { alert("Taux horaire valide"); return; }
         projects.push({ id: Date.now(), name, rate, color });
         saveData();
         renderAll();
-        document.getElementById('projName').value = '';
-        document.getElementById('projRate').value = '';
+        document.getElementById('newProjName').value = '';
+        document.getElementById('newProjRate').value = '';
     }
-
-    // Supprimer projet
     function deleteProject(projId) {
         if(confirm("Supprimer ce projet et toutes ses sessions ?")) {
             projects = projects.filter(p => p.id !== projId);
@@ -297,8 +285,7 @@
             renderAll();
         }
     }
-
-    // Ajout session (manuel ou timer)
+    // Sessions
     function addSession(projectId, date, hours, notes) {
         if(!projectId) { alert("Choisissez un projet"); return false; }
         if(!date) { alert("Date requise"); return false; }
@@ -308,7 +295,6 @@
         renderAll();
         return true;
     }
-
     function deleteSession(sessionId) {
         sessions = sessions.filter(s => s.id !== sessionId);
         saveData();
@@ -320,47 +306,45 @@
         const hrs = Math.floor(timerSeconds / 3600);
         const mins = Math.floor((timerSeconds % 3600) / 60);
         const secs = timerSeconds % 60;
-        timerDisplay.textContent = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+        timerDisplaySpan.textContent = `${hrs.toString().padStart(2,'0')}:${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
     }
     function startTimer() { if(timerInterval) return; timerInterval = setInterval(() => { timerSeconds++; updateTimerDisplay(); }, 1000); }
     function pauseTimer() { if(timerInterval) { clearInterval(timerInterval); timerInterval = null; } }
     function resetTimer() { pauseTimer(); timerSeconds = 0; updateTimerDisplay(); }
-    document.getElementById('timerStart').onclick = startTimer;
-    document.getElementById('timerPause').onclick = pauseTimer;
-    document.getElementById('timerReset').onclick = resetTimer;
-    saveTimerBtn.onclick = () => {
-        const projId = parseInt(sessionProjectTimer.value);
+    function saveTimerSession() {
+        const projId = parseInt(timerProjectSelect.value);
         const hours = timerSeconds / 3600;
         if(!projId) { alert("Sélectionnez un projet"); return; }
         if(hours <= 0) { alert("Aucune durée à enregistrer"); return; }
         const today = new Date().toISOString().slice(0,10);
         addSession(projId, today, hours, "timer");
         resetTimer();
-    };
-
-    // Rendu projets + selects
-    function renderProjectsSelect() {
-        const options = '<option value="">-- Projet --</option>' + projects.map(p => `<option value="${p.id}">${p.name} (${p.rate}€/h)</option>`).join('');
-        sessionProjectTimer.innerHTML = options;
-        manualProject.innerHTML = options;
     }
 
-    function renderProjectList() {
-        if(projects.length === 0) { projListDiv.innerHTML = '<p>Aucun projet</p>'; projCountSpan.innerText = '0'; return; }
-        projCountSpan.innerText = projects.length;
-        projListDiv.innerHTML = projects.map(p => `
-            <div class="project-item">
-                <div><span class="project-color" style="background:${p.color};"></span> <strong>${escapeHtml(p.name)}</strong> (${p.rate}€/h)</div>
-                <div><i class="fas fa-trash delete-proj" data-id="${p.id}"></i></div>
-            </div>
+    // Rendu tableaux
+    function renderProjectsTable() {
+        if(projects.length === 0) { projectsTbody.innerHTML = '<tr><td colspan="4">Aucun projet</td></tr>'; statProjects.innerText = '0'; return; }
+        statProjects.innerText = projects.length;
+        projectsTbody.innerHTML = projects.map(p => `
+            <tr>
+                <td><span class="project-color" style="background:${p.color};"></span> ${escapeHtml(p.name)}</td>
+                <td>${p.rate} €/h</td>
+                <td><input type="color" value="${p.color}" disabled style="width:40px;"></td>
+                <td><button class="del-proj-btn" data-id="${p.id}" style="background:#b91c1c; padding:0.2rem 0.6rem;">🗑️</button></td>
+            </tr>
         `).join('');
-        document.querySelectorAll('.delete-proj').forEach(el => {
-            el.addEventListener('click', (e) => deleteProject(parseInt(el.getAttribute('data-id'))));
+        document.querySelectorAll('.del-proj-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deleteProject(parseInt(btn.getAttribute('data-id'))));
         });
+        // Mettre à jour les selects
+        const options = '<option value="">-- Projet --</option>' + projects.map(p => `<option value="${p.id}">${escapeHtml(p.name)} (${p.rate}€/h)</option>`).join('');
+        timerProjectSelect.innerHTML = options;
+        manualProjectSelect.innerHTML = options;
     }
 
     function renderSessionsTable() {
-        if(sessions.length === 0) { sessionsTbody.innerHTML = '<tr><td colspan="6">Aucune session</td></tr>'; totalHoursSpan.innerText = '0'; totalRevenueSpan.innerText = '0'; return; }
+        if(sessions.length === 0) { sessionsTbody.innerHTML = '<tr><td colspan="6">Aucune session</td></tr>'; statSessions.innerText = '0'; statHours.innerText = '0'; statRevenue.innerText = '0 €'; return; }
+        statSessions.innerText = sessions.length;
         let totalH = 0, totalRev = 0;
         const rows = sessions.map(s => {
             const proj = projects.find(p => p.id === s.projectId);
@@ -372,17 +356,17 @@
             return `<tr>
                 <td>${s.date}</td>
                 <td>${escapeHtml(pName)}</td>
-                <td>${s.hours} h</td>
+                <td>${s.hours}</td>
                 <td>${revenue.toFixed(2)} €</td>
                 <td>${escapeHtml(s.notes || '—')}</td>
-                <td><i class="fas fa-trash delete-session" data-id="${s.id}"></i></td>
+                <td><button class="del-session-btn" data-id="${s.id}" style="background:#b91c1c; padding:0.2rem 0.6rem;">🗑️</button></td>
             </tr>`;
         }).join('');
         sessionsTbody.innerHTML = rows;
-        totalHoursSpan.innerText = totalH.toFixed(1);
-        totalRevenueSpan.innerText = totalRev.toFixed(2);
-        document.querySelectorAll('.delete-session').forEach(el => {
-            el.addEventListener('click', (e) => deleteSession(parseInt(el.getAttribute('data-id'))));
+        statHours.innerText = totalH.toFixed(1);
+        statRevenue.innerText = totalRev.toFixed(2) + ' €';
+        document.querySelectorAll('.del-session-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => deleteSession(parseInt(btn.getAttribute('data-id'))));
         });
     }
 
@@ -401,14 +385,14 @@
             }
         });
         if(labels.length === 0) {
-            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Aucune donnée'], datasets: [{ data: [1], backgroundColor: ['#ccc'] }] } });
+            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Aucune donnée'], datasets: [{ data: [1], backgroundColor: ['#aaa'] }] } });
             return;
         }
         chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels, datasets: [{ data, backgroundColor: bgColors, borderWidth: 0 }] }, options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' } } } });
     }
 
     function resetAllData() {
-        if(confirm("⚠️ Supprimer TOUS les projets et TOUTES les sessions ? Action irréversible.")) {
+        if(confirm("⚠️ Supprimer TOUS les projets et TOUTES les sessions ?")) {
             projects = [];
             sessions = [];
             saveData();
@@ -428,35 +412,37 @@
         const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
-        link.setAttribute("download", "worktrack_sessions.csv");
-        document.body.appendChild(link);
+        link.download = "worktrack_sessions.csv";
         link.click();
-        document.body.removeChild(link);
     }
 
     function renderAll() {
-        renderProjectsSelect();
-        renderProjectList();
+        renderProjectsTable();
         renderSessionsTable();
         updateChart();
         document.getElementById('manualDate').value = new Date().toISOString().slice(0,10);
     }
 
-    // Event manuel
-    addManualBtn.onclick = () => {
-        const projectId = parseInt(manualProject.value);
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    // Événements
+    document.getElementById('addProjectBtn').onclick = addProject;
+    document.getElementById('addManualSessionBtn').onclick = () => {
+        const projId = parseInt(manualProjectSelect.value);
         const date = document.getElementById('manualDate').value;
         const hours = parseFloat(document.getElementById('manualHours').value);
         const notes = document.getElementById('manualNotes').value;
-        if(addSession(projectId, date, hours, notes)) {
+        if(addSession(projId, date, hours, notes)) {
             document.getElementById('manualHours').value = '';
             document.getElementById('manualNotes').value = '';
         }
     };
-    addProjBtn.onclick = addProject;
-    resetAllBtn.onclick = resetAllData;
-    exportBtn.onclick = exportCSV;
-    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+    document.getElementById('timerStart').onclick = startTimer;
+    document.getElementById('timerPause').onclick = pauseTimer;
+    document.getElementById('timerReset').onclick = resetTimer;
+    document.getElementById('saveTimerSessionBtn').onclick = saveTimerSession;
+    document.getElementById('resetAllBtn').onclick = resetAllData;
+    document.getElementById('exportCsvBtn').onclick = exportCSV;
 
     loadData();
 </script>
