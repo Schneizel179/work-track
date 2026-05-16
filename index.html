@@ -3,141 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WorkTrack • Temps & Facturation</title>
+    <title>WorkTrack Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
-        .glass { background: rgba(255, 255, 255, 0.92); backdrop-filter: blur(20px); }
-        .dark .glass { background: rgba(15, 23, 42, 0.92); }
-        .timer-text { font-size: 3.5rem; }
-        @media (max-width: 640px) {
-            .timer-text { font-size: 2.8rem; }
-        }
+        .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); }
+        .dark .glass { background: rgba(15,23,42,0.95); }
+        .timer-text { font-size: 2.75rem; }
+        @media (max-width: 640px) { .timer-text { font-size: 2.1rem; } }
     </style>
 </head>
-<body class="bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-950 dark:to-slate-900 min-h-screen pb-24">
+<body class="bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-950 dark:to-slate-900 min-h-screen pb-20">
 
 <div class="max-w-7xl mx-auto p-4 sm:p-6">
 
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div class="flex items-center gap-3">
-            <div class="w-9 h-9 bg-blue-600 rounded-2xl flex items-center justify-center text-white text-2xl shadow-inner">
-                ⏱️
-            </div>
-            <h1 class="text-2xl sm:text-3xl font-bold text-slate-800 dark:text-white">WorkTrack</h1>
+            <div class="w-11 h-11 bg-blue-600 rounded-3xl flex items-center justify-center text-white text-3xl">⏱️</div>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white">WorkTrack</h1>
         </div>
-        <button id="themeToggle" class="w-11 h-11 flex items-center justify-center text-2xl rounded-2xl hover:bg-white dark:hover:bg-slate-800 transition-all active:scale-95">
+        <button id="themeToggle" class="w-12 h-12 flex items-center justify-center text-2xl rounded-3xl hover:bg-slate-200 dark:hover:bg-slate-700">
             <i class="fas fa-moon"></i>
         </button>
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        <div class="glass rounded-3xl p-5 shadow-md">
-            <p class="text-xs text-slate-500 dark:text-slate-400">Total heures</p>
-            <p id="totalHours" class="text-3xl font-bold text-slate-800 dark:text-white mt-1">0.0</p>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div class="glass rounded-3xl p-6 shadow">
+            <p class="text-sm text-slate-500">Total heures</p>
+            <p id="totalHours" class="text-4xl font-bold">0.0</p>
         </div>
-        <div class="glass rounded-3xl p-5 shadow-md">
-            <p class="text-xs text-slate-500 dark:text-slate-400">Revenu</p>
-            <p id="totalRevenue" class="text-3xl font-bold text-emerald-600 dark:text-emerald-500 mt-1">0 €</p>
+        <div class="glass rounded-3xl p-6 shadow">
+            <p class="text-sm text-slate-500">Revenu estimé</p>
+            <p id="totalRevenue" class="text-4xl font-bold text-emerald-600">0 €</p>
         </div>
-        <div class="glass rounded-3xl p-5 shadow-md">
-            <p class="text-xs text-slate-500 dark:text-slate-400">Projets</p>
-            <p id="totalProjects" class="text-3xl font-bold text-slate-800 dark:text-white mt-1">0</p>
+        <div class="glass rounded-3xl p-6 shadow">
+            <p class="text-sm text-slate-500">Projets</p>
+            <p id="totalProjects" class="text-4xl font-bold">0</p>
         </div>
-        <div class="glass rounded-3xl p-5 shadow-md">
-            <p class="text-xs text-slate-500 dark:text-slate-400">Sessions</p>
-            <p id="totalSessions" class="text-3xl font-bold text-slate-800 dark:text-white mt-1">0</p>
+        <div class="glass rounded-3xl p-6 shadow">
+            <p class="text-sm text-slate-500">Sessions</p>
+            <p id="totalSessions" class="text-4xl font-bold">0</p>
         </div>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- Projets -->
+        <!-- Projets & Clients -->
         <div class="lg:col-span-5">
-            <div class="glass rounded-3xl p-5 sm:p-6 shadow-xl">
-                <h2 class="text-lg font-semibold mb-4 flex items-center gap-2">
-                    <i class="fas fa-briefcase"></i> Mes projets
-                </h2>
-                <div id="projectsList" class="space-y-3 mb-6 max-h-80 overflow-auto"></div>
+            <div class="glass rounded-3xl p-6 shadow-xl">
+                <h2 class="font-semibold text-lg mb-4 flex items-center gap-2"><i class="fas fa-briefcase"></i> Projets & Clients</h2>
+                <div id="projectsList" class="space-y-3 max-h-80 overflow-auto mb-6"></div>
 
-                <!-- Formulaire ajout -->
-                <div class="grid grid-cols-12 gap-2">
-                    <input id="projName" type="text" placeholder="Nom du projet" 
-                           class="col-span-5 px-4 py-3.5 text-sm rounded-2xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-blue-500">
-                    <input id="projRate" type="number" step="0.5" placeholder="€/h" 
-                           class="col-span-3 px-4 py-3.5 text-sm rounded-2xl border border-slate-200 dark:border-slate-700 focus:outline-none focus:border-blue-500">
-                    <input id="projColor" type="color" value="#3b82f6" class="col-span-2 h-12 rounded-2xl cursor-pointer">
-                    <button id="addProject" 
-                            class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-2xl active:scale-95 transition-all">
-                        +
-                    </button>
+                <div class="grid grid-cols-12 gap-3">
+                    <input id="projName" placeholder="Nom du projet" class="col-span-5 px-4 py-3 rounded-2xl border focus:border-blue-500">
+                    <input id="projRate" type="number" step="0.5" placeholder="€/h" class="col-span-3 px-4 py-3 rounded-2xl border focus:border-blue-500">
+                    <input id="projColor" type="color" value="#3b82f6" class="col-span-2 h-12 rounded-2xl">
+                    <button id="addProject" class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-2xl font-bold">+</button>
                 </div>
             </div>
         </div>
 
         <!-- Timer -->
         <div class="lg:col-span-7">
-            <div class="glass rounded-3xl p-6 sm:p-8 shadow-xl text-center">
-                <h2 class="text-lg font-semibold mb-6 flex items-center justify-center gap-2">
-                    <i class="fas fa-stopwatch"></i> Chronomètre
-                </h2>
+            <div class="glass rounded-3xl p-6 shadow-xl">
+                <h2 class="font-semibold text-lg mb-4"><i class="fas fa-stopwatch"></i> Chronomètre</h2>
+                <div id="timerDisplay" class="timer-text font-mono font-bold text-center mb-6 text-slate-800 dark:text-white">00:00:00</div>
                 
-                <div id="timerDisplay" class="timer-text font-mono font-bold tracking-widest text-slate-800 dark:text-white mb-8">
-                    00:00:00
+                <div class="flex gap-4 justify-center mb-6">
+                    <button id="startBtn" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl flex items-center gap-2"><i class="fas fa-play"></i> Démarrer</button>
+                    <button id="pauseBtn" class="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl flex items-center gap-2"><i class="fas fa-pause"></i> Pause</button>
+                    <button id="resetBtn" class="px-6 py-4 bg-slate-500 hover:bg-slate-600 text-white rounded-3xl"><i class="fas fa-redo"></i></button>
                 </div>
 
-                <div class="flex justify-center gap-3 sm:gap-4 mb-8">
-                    <button id="startBtn" class="flex-1 sm:flex-none px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl flex items-center justify-center gap-2 text-base font-medium active:scale-95">
-                        <i class="fas fa-play"></i> Démarrer
-                    </button>
-                    <button id="pauseBtn" class="flex-1 sm:flex-none px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl flex items-center justify-center gap-2 text-base font-medium active:scale-95">
-                        <i class="fas fa-pause"></i> Pause
-                    </button>
-                    <button id="resetBtn" class="px-5 py-4 bg-slate-500 hover:bg-slate-600 text-white rounded-3xl active:scale-95">
-                        <i class="fas fa-redo"></i>
-                    </button>
-                </div>
-
-                <select id="timerProject" class="w-full px-5 py-4 rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-base">
-                    <option value="">— Choisir un projet —</option>
-                </select>
-
-                <button id="saveSessionBtn" class="mt-6 w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-3xl text-base active:scale-95">
-                    💾 Enregistrer la session
-                </button>
+                <select id="timerProject" class="w-full px-5 py-4 rounded-3xl border mb-4"></select>
+                
+                <button id="saveSessionBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-3xl">Enregistrer la session actuelle</button>
             </div>
         </div>
 
-        <!-- Graphique + Historique -->
-        <div class="lg:col-span-12 xl:col-span-7">
-            <div class="glass rounded-3xl p-5 sm:p-6 shadow-xl">
-                <h2 class="text-lg font-semibold mb-4">Répartition des heures</h2>
-                <div class="h-64 sm:h-80">
-                    <canvas id="hoursChart"></canvas>
+        <!-- Ajout manuel de prestation -->
+        <div class="lg:col-span-12">
+            <div class="glass rounded-3xl p-6 shadow-xl">
+                <h2 class="font-semibold text-lg mb-4"><i class="fas fa-plus-circle"></i> Ajouter une prestation manuellement</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <input id="manualDate" type="date" class="px-4 py-3 rounded-2xl border">
+                    <select id="manualProject" class="px-4 py-3 rounded-2xl border"></select>
+                    <input id="manualTask" placeholder="Tâche / Prestation" class="px-4 py-3 rounded-2xl border">
+                    <input id="manualHours" type="number" step="0.25" placeholder="Heures" class="px-4 py-3 rounded-2xl border">
+                    <select id="manualBillable" class="px-4 py-3 rounded-2xl border">
+                        <option value="true">Billable</option>
+                        <option value="false">Non billable</option>
+                    </select>
+                    <button id="addManualBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl font-medium">Ajouter</button>
                 </div>
+                <input id="manualNotes" placeholder="Notes (optionnel)" class="mt-4 w-full px-4 py-3 rounded-2xl border">
             </div>
         </div>
 
-        <div class="lg:col-span-12 xl:col-span-5">
-            <div class="glass rounded-3xl p-5 sm:p-6 shadow-xl">
-                <h2 class="text-lg font-semibold mb-4">Dernières sessions</h2>
-                <div id="recentSessions" class="space-y-3 max-h-80 overflow-auto pr-2"></div>
+        <!-- Tableau des sessions -->
+        <div class="lg:col-span-12">
+            <div class="glass rounded-3xl p-6 shadow-xl">
+                <div class="flex justify-between mb-4">
+                    <h2 class="font-semibold text-lg">Historique des prestations</h2>
+                    <input id="searchInput" placeholder="Rechercher..." class="px-5 py-2 rounded-2xl border text-sm">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr class="border-b">
+                                <th class="text-left py-3">Date</th>
+                                <th class="text-left">Projet</th>
+                                <th class="text-left">Prestation</th>
+                                <th class="text-right">Heures</th>
+                                <th class="text-right">Montant</th>
+                                <th>Notes</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="sessionsTable" class="divide-y"></tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 <!-- Boutons flottants -->
-<div class="fixed bottom-6 right-6 flex flex-col gap-3 z-50">
-    <button id="exportBtn" class="bg-white dark:bg-slate-800 shadow-xl px-5 py-4 rounded-3xl flex items-center gap-3 hover:shadow-2xl active:scale-95 transition-all">
-        <i class="fas fa-download"></i>
-        <span class="font-medium text-sm">CSV</span>
+<div class="fixed bottom-6 right-6 flex flex-col gap-3">
+    <button id="exportBtn" class="bg-white dark:bg-slate-800 shadow-xl px-6 py-4 rounded-3xl flex items-center gap-3 hover:shadow-2xl">
+        <i class="fas fa-download"></i> Export
     </button>
-    <button id="resetAllBtn" class="bg-red-100 dark:bg-red-900/40 text-red-600 px-5 py-4 rounded-3xl flex items-center gap-3 hover:bg-red-200 active:scale-95 transition-all">
+    <button id="resetAllBtn" class="bg-red-100 dark:bg-red-900/30 text-red-600 px-6 py-4 rounded-3xl flex items-center gap-3">
         <i class="fas fa-trash"></i>
     </button>
 </div>
@@ -154,53 +154,49 @@ const $ = id => document.getElementById(id);
 
 // ==================== Data ====================
 function loadData() {
-    projects = JSON.parse(localStorage.getItem('worktrack_projects')) || [
-        {id: 1, name: "Développement Web", rate: 65, color: "#3b82f6"}
-    ];
-    sessions = JSON.parse(localStorage.getItem('worktrack_sessions')) || [];
+    projects = JSON.parse(localStorage.getItem('wt_projects')) || [];
+    sessions = JSON.parse(localStorage.getItem('wt_sessions')) || [];
+
+    if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark');
 }
 
 function saveData() {
-    localStorage.setItem('worktrack_projects', JSON.stringify(projects));
-    localStorage.setItem('worktrack_sessions', JSON.stringify(sessions));
+    localStorage.setItem('wt_projects', JSON.stringify(projects));
+    localStorage.setItem('wt_sessions', JSON.stringify(sessions));
 }
 
-// ==================== Render Functions ====================
+// ==================== Render ====================
 function renderAll() {
     renderProjects();
     updateStats();
-    updateProjectSelect();
-    updateRecentSessions();
-    updateChart();
+    updateSelects();
+    renderSessionsTable();
 }
 
 function renderProjects() {
-    const container = $('projectsList');
-    container.innerHTML = projects.map(p => {
-        const hours = sessions.filter(s => s.projectId === p.id).reduce((sum, s) => sum + s.hours, 0);
+    const html = projects.map(p => {
+        const hours = sessions.filter(s => s.projectId === p.id).reduce((a, s) => a + s.hours, 0);
         return `
             <div class="flex items-center justify-between bg-white/70 dark:bg-slate-800/70 p-4 rounded-2xl">
                 <div class="flex items-center gap-3">
-                    <div class="w-6 h-6 rounded-xl flex-shrink-0" style="background: ${p.color}"></div>
-                    <div class="min-w-0">
-                        <p class="font-medium truncate">${p.name}</p>
+                    <div class="w-8 h-8 rounded-2xl" style="background:${p.color}"></div>
+                    <div>
+                        <p class="font-medium">${p.name}</p>
                         <p class="text-xs text-slate-500">${p.rate} €/h • ${hours.toFixed(1)}h</p>
                     </div>
                 </div>
-                <div class="flex gap-1">
-                    <button onclick="editProject(${p.id})" class="p-2 text-slate-400 hover:text-blue-600">✏️</button>
-                    <button onclick="deleteProject(${p.id})" class="p-2 text-slate-400 hover:text-red-600">🗑</button>
-                </div>
+                <button onclick="deleteProject(${p.id})" class="text-red-500 hover:text-red-700">🗑</button>
             </div>`;
     }).join('');
+    $('projectsList').innerHTML = html || '<p class="text-slate-400 text-center py-8">Aucun projet. Ajoutez-en un !</p>';
 }
 
 function updateStats() {
     let totalH = 0, totalR = 0;
     sessions.forEach(s => {
-        const proj = projects.find(p => p.id === s.projectId);
+        const p = projects.find(pr => pr.id === s.projectId);
         totalH += s.hours;
-        totalR += s.hours * (proj?.rate || 0);
+        if (s.billable) totalR += s.hours * (p?.rate || 0);
     });
 
     $('totalHours').textContent = totalH.toFixed(1);
@@ -209,59 +205,11 @@ function updateStats() {
     $('totalSessions').textContent = sessions.length;
 }
 
-function updateProjectSelect() {
-    const select = $('timerProject');
-    select.innerHTML = `<option value="">— Choisir un projet —</option>` +
+function updateSelects() {
+    const html = `<option value="">— Choisir un projet —</option>` + 
         projects.map(p => `<option value="${p.id}">${p.name} (${p.rate}€/h)</option>`).join('');
-}
-
-function updateRecentSessions() {
-    const container = $('recentSessions');
-    const recent = [...sessions].sort((a,b) => new Date(b.date) - new Date(a.date)).slice(0, 6);
-
-    if (recent.length === 0) {
-        container.innerHTML = `<p class="text-center py-10 text-slate-400 text-sm">Aucune session enregistrée</p>`;
-        return;
-    }
-
-    container.innerHTML = recent.map(s => {
-        const proj = projects.find(p => p.id === s.projectId);
-        return `
-            <div class="flex justify-between items-center bg-white/60 dark:bg-slate-800/60 p-4 rounded-2xl">
-                <div>
-                    <p class="font-medium text-sm">${proj ? proj.name : 'Projet supprimé'}</p>
-                    <p class="text-xs text-slate-500">${new Date(s.date).toLocaleDateString('fr-FR')}</p>
-                </div>
-                <div class="text-right">
-                    <p class="font-semibold">${s.hours.toFixed(2)}h</p>
-                    <p class="text-emerald-600 text-xs">${(s.hours * (proj?.rate || 0)).toFixed(0)} €</p>
-                </div>
-            </div>`;
-    }).join('');
-}
-
-function updateChart() {
-    const ctx = $('hoursChart').getContext('2d');
-    if (chart) chart.destroy();
-
-    const map = {};
-    projects.forEach(p => map[p.id] = 0);
-    sessions.forEach(s => map[s.projectId] = (map[s.projectId] || 0) + s.hours);
-
-    const labels = [], data = [], colors = [];
-    projects.forEach(p => {
-        if (map[p.id] > 0) {
-            labels.push(p.name);
-            data.push(map[p.id]);
-            colors.push(p.color);
-        }
-    });
-
-    chart = new Chart(ctx, {
-        type: 'doughnut',
-        data: { labels, datasets: [{ data, backgroundColor: colors, borderWidth: 4, borderColor: '#ffffff' }] },
-        options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
-    });
+    $('timerProject').innerHTML = html;
+    $('manualProject').innerHTML = html;
 }
 
 // ==================== Timer ====================
@@ -272,40 +220,84 @@ function updateTimerDisplay() {
     $('timerDisplay').textContent = `${h}:${m}:${s}`;
 }
 
-function startTimer() {
+$('startBtn').addEventListener('click', () => {
     if (timerInterval) return;
     timerInterval = setInterval(() => { seconds++; updateTimerDisplay(); }, 1000);
-}
+});
 
-function pauseTimer() { clearInterval(timerInterval); timerInterval = null; }
-function resetTimer() { pauseTimer(); seconds = 0; updateTimerDisplay(); }
+$('pauseBtn').addEventListener('click', () => { clearInterval(timerInterval); timerInterval = null; });
+$('resetBtn').addEventListener('click', () => { 
+    clearInterval(timerInterval); timerInterval = null; seconds = 0; updateTimerDisplay(); 
+});
 
-// ==================== CRUD ====================
+// ==================== Ajout Projet ====================
 $('addProject').addEventListener('click', () => {
     const name = $('projName').value.trim();
     const rate = parseFloat($('projRate').value);
-    if (!name || !rate) return alert("Nom et taux requis");
+    if (!name || !rate) return alert("Nom et taux horaire requis");
 
-    projects.push({ id: Date.now(), name, rate, color: $('projColor').value });
+    projects.push({
+        id: Date.now(),
+        name,
+        rate,
+        color: $('projColor').value
+    });
+
     saveData();
     renderAll();
     $('projName').value = '';
     $('projRate').value = '';
 });
 
-window.editProject = function(id) {
-    const p = projects.find(x => x.id === id);
-    if (!p) return;
-    const name = prompt("Nouveau nom :", p.name);
-    if (name) p.name = name;
-    const rate = prompt("Nouveau taux (€/h) :", p.rate);
-    if (rate) p.rate = parseFloat(rate);
+// ==================== Ajout Manuel ====================
+$('addManualBtn').addEventListener('click', () => {
+    const projectId = parseInt($('manualProject').value);
+    const hours = parseFloat($('manualHours').value);
+    if (!projectId || !hours) return alert("Projet et durée requis");
+
+    sessions.push({
+        id: Date.now(),
+        projectId,
+        date: $('manualDate').value || new Date().toISOString().split('T')[0],
+        task: $('manualTask').value.trim() || "Prestation",
+        hours,
+        billable: $('manualBillable').value === "true",
+        notes: $('manualNotes').value.trim()
+    });
+
     saveData();
     renderAll();
-};
+    
+    // Reset form
+    $('manualTask').value = '';
+    $('manualHours').value = '';
+    $('manualNotes').value = '';
+});
 
+// ==================== Tableau Sessions ====================
+function renderSessionsTable(filteredSessions = sessions) {
+    const tbody = $('sessionsTable');
+    tbody.innerHTML = filteredSessions.sort((a,b) => new Date(b.date) - new Date(a.date)).map(s => {
+        const proj = projects.find(p => p.id === s.projectId);
+        const amount = s.billable ? (s.hours * (proj?.rate || 0)).toFixed(0) : '—';
+        return `
+            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                <td class="py-3">${s.date}</td>
+                <td>${proj ? proj.name : 'Supprimé'}</td>
+                <td>${s.task}</td>
+                <td class="text-right font-medium">${s.hours.toFixed(2)}</td>
+                <td class="text-right ${s.billable ? 'text-emerald-600' : 'text-slate-400'}">${amount} €</td>
+                <td class="text-xs text-slate-500">${s.notes || ''}</td>
+                <td>
+                    <button onclick="deleteSession(${s.id})" class="text-red-500 hover:text-red-700">🗑</button>
+                </td>
+            </tr>`;
+    }).join('');
+}
+
+// ==================== Delete ====================
 window.deleteProject = function(id) {
-    if (confirm("Supprimer ce projet ?")) {
+    if (confirm("Supprimer ce projet et toutes ses sessions ?")) {
         projects = projects.filter(p => p.id !== id);
         sessions = sessions.filter(s => s.projectId !== id);
         saveData();
@@ -313,51 +305,73 @@ window.deleteProject = function(id) {
     }
 };
 
+window.deleteSession = function(id) {
+    if (confirm("Supprimer cette prestation ?")) {
+        sessions = sessions.filter(s => s.id !== id);
+        saveData();
+        renderAll();
+    }
+};
+
+// Recherche
+$('searchInput').addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const filtered = sessions.filter(s => {
+        const proj = projects.find(p => p.id === s.projectId);
+        return (proj && proj.name.toLowerCase().includes(term)) || 
+               (s.task && s.task.toLowerCase().includes(term)) ||
+               (s.notes && s.notes.toLowerCase().includes(term));
+    });
+    renderSessionsTable(filtered);
+});
+
+// Enregistrer session timer
 $('saveSessionBtn').addEventListener('click', () => {
     const projId = parseInt($('timerProject').value);
-    if (!projId) return alert("Sélectionnez un projet");
-    if (seconds === 0) return alert("Aucune durée");
+    if (!projId || seconds === 0) return alert("Choisissez un projet et démarrez le timer");
 
     sessions.push({
         id: Date.now(),
         projectId: projId,
         date: new Date().toISOString().split('T')[0],
+        task: "Session chronomètre",
         hours: seconds / 3600,
+        billable: true,
         notes: ""
     });
 
     saveData();
-    resetTimer();
+    seconds = 0;
+    updateTimerDisplay();
     renderAll();
 });
 
-// Export & Reset
+// Theme
+$('themeToggle').addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+});
+
+// Export
 $('exportBtn').addEventListener('click', () => {
-    let csv = "Date;Projet;Heures;Revenu (€)\n";
+    let csv = "Date;Projet;Prestation;Heures;Billable;Montant;Notes\n";
     sessions.forEach(s => {
         const p = projects.find(pr => pr.id === s.projectId);
-        csv += `${s.date};${p ? p.name.replace(/;/g,'') : ''};${s.hours.toFixed(2)};${(s.hours * (p?.rate || 0)).toFixed(2)}\n`;
+        csv += `${s.date};${p ? p.name : ''};${s.task};${s.hours};${s.billable};${s.billable ? s.hours*(p?.rate||0) : 0};${s.notes||''}\n`;
     });
-    const blob = new Blob(["\uFEFF"+csv], {type: "text/csv"});
+    const blob = new Blob(["\uFEFF" + csv], {type: "text/csv"});
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
     link.download = `worktrack_${new Date().toISOString().slice(0,10)}.csv`;
     link.click();
 });
 
+// Reset
 $('resetAllBtn').addEventListener('click', () => {
-    if (confirm("Tout supprimer définitivement ?")) {
+    if (confirm("Tout supprimer ?")) {
         localStorage.clear();
         location.reload();
     }
-});
-
-// Theme
-$('themeToggle').addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-    $('themeToggle').innerHTML = document.documentElement.classList.contains('dark') 
-        ? '<i class="fas fa-sun"></i>' 
-        : '<i class="fas fa-moon"></i>';
 });
 
 // Init
