@@ -6,13 +6,14 @@
     <title>WorkTrack Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <style>
         body { font-family: 'Inter', system-ui, sans-serif; }
         .glass { background: rgba(255,255,255,0.95); backdrop-filter: blur(20px); }
         .dark .glass { background: rgba(15,23,42,0.95); }
         .timer-text { font-size: 2.75rem; }
         @media (max-width: 640px) { .timer-text { font-size: 2.1rem; } }
+        /* Empêcher le zoom sur les inputs sur iOS */
+        input[type="date"], input[type="number"], input[type="text"] { font-size: 16px; }
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-100 to-blue-50 dark:from-slate-950 dark:to-slate-900 min-h-screen pb-20">
@@ -59,10 +60,10 @@
                 <div id="projectsList" class="space-y-3 max-h-80 overflow-auto mb-6"></div>
 
                 <div class="grid grid-cols-12 gap-3">
-                    <input id="projName" placeholder="Nom du projet" class="col-span-5 px-4 py-3 rounded-2xl border focus:border-blue-500">
-                    <input id="projRate" type="number" step="0.5" placeholder="€/h" class="col-span-3 px-4 py-3 rounded-2xl border focus:border-blue-500">
-                    <input id="projColor" type="color" value="#3b82f6" class="col-span-2 h-12 rounded-2xl">
-                    <button id="addProject" class="col-span-2 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-2xl font-bold">+</button>
+                    <input id="projName" placeholder="Nom du projet" class="col-span-12 sm:col-span-5 px-4 py-3 rounded-2xl border focus:border-blue-500">
+                    <input id="projRate" type="number" step="0.5" placeholder="€/h" class="col-span-6 sm:col-span-3 px-4 py-3 rounded-2xl border focus:border-blue-500">
+                    <input id="projColor" type="color" value="#3b82f6" class="col-span-3 sm:col-span-2 h-12 rounded-2xl">
+                    <button id="addProject" class="col-span-3 sm:col-span-2 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-2xl font-bold">+</button>
                 </div>
             </div>
         </div>
@@ -72,32 +73,28 @@
             <div class="glass rounded-3xl p-6 shadow-xl">
                 <h2 class="font-semibold text-lg mb-4"><i class="fas fa-stopwatch"></i> Chronomètre</h2>
                 <div id="timerDisplay" class="timer-text font-mono font-bold text-center mb-6 text-slate-800 dark:text-white">00:00:00</div>
-                
-                <div class="flex gap-4 justify-center mb-6">
+
+                <div class="flex flex-wrap gap-4 justify-center mb-6">
                     <button id="startBtn" class="px-8 py-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl flex items-center gap-2"><i class="fas fa-play"></i> Démarrer</button>
                     <button id="pauseBtn" class="px-8 py-4 bg-amber-500 hover:bg-amber-600 text-white rounded-3xl flex items-center gap-2"><i class="fas fa-pause"></i> Pause</button>
                     <button id="resetBtn" class="px-6 py-4 bg-slate-500 hover:bg-slate-600 text-white rounded-3xl"><i class="fas fa-redo"></i></button>
                 </div>
 
                 <select id="timerProject" class="w-full px-5 py-4 rounded-3xl border mb-4"></select>
-                
-                <button id="saveSessionBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-3xl">Enregistrer la session actuelle</button>
+
+                <button id="saveSessionBtn" class="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-3xl">Enregistrer la session</button>
             </div>
         </div>
 
         <!-- Ajout manuel de prestation -->
         <div class="lg:col-span-12">
             <div class="glass rounded-3xl p-6 shadow-xl">
-                <h2 class="font-semibold text-lg mb-4"><i class="fas fa-plus-circle"></i> Ajouter une prestation manuellement</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4">
+                <h2 class="font-semibold text-lg mb-4"><i class="fas fa-plus-circle"></i> Ajouter une prestation</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                     <input id="manualDate" type="date" class="px-4 py-3 rounded-2xl border">
                     <select id="manualProject" class="px-4 py-3 rounded-2xl border"></select>
-                    <input id="manualTask" placeholder="Tâche / Prestation" class="px-4 py-3 rounded-2xl border">
+                    <input id="manualTask" placeholder="Tâche" class="px-4 py-3 rounded-2xl border">
                     <input id="manualHours" type="number" step="0.25" placeholder="Heures" class="px-4 py-3 rounded-2xl border">
-                    <select id="manualBillable" class="px-4 py-3 rounded-2xl border">
-                        <option value="true">Billable</option>
-                        <option value="false">Non billable</option>
-                    </select>
                     <button id="addManualBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-3xl font-medium">Ajouter</button>
                 </div>
                 <input id="manualNotes" placeholder="Notes (optionnel)" class="mt-4 w-full px-4 py-3 rounded-2xl border">
@@ -106,22 +103,33 @@
 
         <!-- Tableau des sessions -->
         <div class="lg:col-span-12">
-            <div class="glass rounded-3xl p-6 shadow-xl">
-                <div class="flex justify-between mb-4">
+            <div class="glass rounded-3xl p-4 sm:p-6 shadow-xl">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                     <h2 class="font-semibold text-lg">Historique des prestations</h2>
-                    <input id="searchInput" placeholder="Rechercher..." class="px-5 py-2 rounded-2xl border text-sm">
+                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                        <input id="searchInput" placeholder="Rechercher..." class="px-4 py-2 rounded-2xl border text-sm w-full sm:w-48">
+                        <input type="date" id="dateDebut" class="px-3 py-2 rounded-2xl border text-sm">
+                        <span class="text-slate-400 self-center hidden sm:inline">à</span>
+                        <input type="date" id="dateFin" class="px-3 py-2 rounded-2xl border text-sm">
+                        <span id="filteredTotal" class="text-sm text-slate-500 self-center whitespace-nowrap"></span>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
+
+                <!-- Vue mobile : cartes -->
+                <div id="sessionsCards" class="block md:hidden space-y-3"></div>
+
+                <!-- Vue desktop : tableau -->
+                <div class="hidden md:block overflow-x-auto">
+                    <table class="w-full text-sm min-w-[700px]">
                         <thead>
-                            <tr class="border-b">
-                                <th class="text-left py-3">Date</th>
-                                <th class="text-left">Projet</th>
-                                <th class="text-left">Prestation</th>
-                                <th class="text-right">Heures</th>
-                                <th class="text-right">Montant</th>
-                                <th>Notes</th>
-                                <th>Actions</th>
+                            <tr class="border-b text-left text-slate-500">
+                                <th class="py-3 px-4 cursor-pointer hover:text-slate-700" data-sort="date">Date ↕</th>
+                                <th class="py-3 px-4 cursor-pointer hover:text-slate-700" data-sort="project">Projet ↕</th>
+                                <th class="py-3 px-4">Prestation</th>
+                                <th class="py-3 px-4 text-right cursor-pointer hover:text-slate-700" data-sort="hours">Heures ↕</th>
+                                <th class="py-3 px-4 text-right cursor-pointer hover:text-slate-700" data-sort="amount">Montant ↕</th>
+                                <th class="py-3 px-4">Notes</th>
+                                <th class="py-3 px-4 text-center">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="sessionsTable" class="divide-y"></tbody>
@@ -143,241 +151,429 @@
 </div>
 
 <script>
-// ==================== Variables ====================
-let projects = [];
-let sessions = [];
-let timerInterval = null;
-let seconds = 0;
-let chart = null;
+(function() {
+    // ==================== Variables ====================
+    let projects = [];
+    let sessions = [];
+    let timerInterval = null;
+    let seconds = 0;
+    let currentSort = { field: 'date', direction: 'desc' };
+    let editingId = null;
 
-const $ = id => document.getElementById(id);
+    const $ = id => document.getElementById(id);
 
-// ==================== Data ====================
-function loadData() {
-    projects = JSON.parse(localStorage.getItem('wt_projects')) || [];
-    sessions = JSON.parse(localStorage.getItem('wt_sessions')) || [];
+    // ==================== LocalStorage ====================
+    function loadData() {
+        projects = JSON.parse(localStorage.getItem('wt_projects_v2')) || [];
+        sessions = JSON.parse(localStorage.getItem('wt_sessions_v2')) || [];
 
-    if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark');
-}
+        // Migrate old data if needed (remove billable field)
+        sessions = sessions.map(s => {
+            if ('billable' in s) {
+                const { billable, ...rest } = s;
+                return rest;
+            }
+            return s;
+        });
 
-function saveData() {
-    localStorage.setItem('wt_projects', JSON.stringify(projects));
-    localStorage.setItem('wt_sessions', JSON.stringify(sessions));
-}
+        if (localStorage.getItem('darkMode') === 'true') document.documentElement.classList.add('dark');
+    }
 
-// ==================== Render ====================
-function renderAll() {
-    renderProjects();
-    updateStats();
-    updateSelects();
-    renderSessionsTable();
-}
+    function saveData() {
+        localStorage.setItem('wt_projects_v2', JSON.stringify(projects));
+        localStorage.setItem('wt_sessions_v2', JSON.stringify(sessions));
+    }
 
-function renderProjects() {
-    const html = projects.map(p => {
-        const hours = sessions.filter(s => s.projectId === p.id).reduce((a, s) => a + s.hours, 0);
-        return `
-            <div class="flex items-center justify-between bg-white/70 dark:bg-slate-800/70 p-4 rounded-2xl">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-2xl" style="background:${p.color}"></div>
-                    <div>
-                        <p class="font-medium">${p.name}</p>
-                        <p class="text-xs text-slate-500">${p.rate} €/h • ${hours.toFixed(1)}h</p>
+    // ==================== Rendu principal ====================
+    function renderAll() {
+        renderProjects();
+        updateStats();
+        updateSelects();
+        renderSessionsView();
+    }
+
+    // ==================== Projets ====================
+    function renderProjects() {
+        const html = projects.map(p => {
+            const hours = sessions.filter(s => s.projectId === p.id).reduce((a, s) => a + s.hours, 0);
+            return `
+                <div class="flex items-center justify-between bg-white/70 dark:bg-slate-800/70 p-4 rounded-2xl">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-2xl" style="background:${p.color}"></div>
+                        <div>
+                            <p class="font-medium">${p.name}</p>
+                            <p class="text-xs text-slate-500">${p.rate} €/h • ${hours.toFixed(1)}h</p>
+                        </div>
                     </div>
-                </div>
-                <button onclick="deleteProject(${p.id})" class="text-red-500 hover:text-red-700">🗑</button>
-            </div>`;
-    }).join('');
-    $('projectsList').innerHTML = html || '<p class="text-slate-400 text-center py-8">Aucun projet. Ajoutez-en un !</p>';
-}
+                    <button onclick="window.deleteProject(${p.id})" class="text-red-500 hover:text-red-700">🗑</button>
+                </div>`;
+        }).join('');
+        $('projectsList').innerHTML = html || '<p class="text-slate-400 text-center py-8">Aucun projet. Ajoutez-en un !</p>';
+    }
 
-function updateStats() {
-    let totalH = 0, totalR = 0;
-    sessions.forEach(s => {
-        const p = projects.find(pr => pr.id === s.projectId);
-        totalH += s.hours;
-        if (s.billable) totalR += s.hours * (p?.rate || 0);
+    function updateStats() {
+        let totalH = 0, totalR = 0;
+        sessions.forEach(s => {
+            const p = projects.find(pr => pr.id === s.projectId);
+            totalH += s.hours;
+            totalR += s.hours * (p?.rate || 0);
+        });
+
+        $('totalHours').textContent = totalH.toFixed(1);
+        $('totalRevenue').textContent = totalR.toFixed(0) + " €";
+        $('totalProjects').textContent = projects.length;
+        $('totalSessions').textContent = sessions.length;
+    }
+
+    function updateSelects() {
+        const html = `<option value="">— Choisir un projet —</option>` +
+            projects.map(p => `<option value="${p.id}">${p.name} (${p.rate}€/h)</option>`).join('');
+        $('timerProject').innerHTML = html;
+        $('manualProject').innerHTML = html;
+    }
+
+    // ==================== Timer ====================
+    function updateTimerDisplay() {
+        const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
+        const s = String(seconds % 60).padStart(2, '0');
+        $('timerDisplay').textContent = `${h}:${m}:${s}`;
+    }
+
+    $('startBtn').addEventListener('click', () => {
+        if (timerInterval) return;
+        timerInterval = setInterval(() => { seconds++; updateTimerDisplay(); }, 1000);
     });
 
-    $('totalHours').textContent = totalH.toFixed(1);
-    $('totalRevenue').textContent = totalR.toFixed(0) + " €";
-    $('totalProjects').textContent = projects.length;
-    $('totalSessions').textContent = sessions.length;
-}
-
-function updateSelects() {
-    const html = `<option value="">— Choisir un projet —</option>` + 
-        projects.map(p => `<option value="${p.id}">${p.name} (${p.rate}€/h)</option>`).join('');
-    $('timerProject').innerHTML = html;
-    $('manualProject').innerHTML = html;
-}
-
-// ==================== Timer ====================
-function updateTimerDisplay() {
-    const h = String(Math.floor(seconds / 3600)).padStart(2, '0');
-    const m = String(Math.floor((seconds % 3600) / 60)).padStart(2, '0');
-    const s = String(seconds % 60).padStart(2, '0');
-    $('timerDisplay').textContent = `${h}:${m}:${s}`;
-}
-
-$('startBtn').addEventListener('click', () => {
-    if (timerInterval) return;
-    timerInterval = setInterval(() => { seconds++; updateTimerDisplay(); }, 1000);
-});
-
-$('pauseBtn').addEventListener('click', () => { clearInterval(timerInterval); timerInterval = null; });
-$('resetBtn').addEventListener('click', () => { 
-    clearInterval(timerInterval); timerInterval = null; seconds = 0; updateTimerDisplay(); 
-});
-
-// ==================== Ajout Projet ====================
-$('addProject').addEventListener('click', () => {
-    const name = $('projName').value.trim();
-    const rate = parseFloat($('projRate').value);
-    if (!name || !rate) return alert("Nom et taux horaire requis");
-
-    projects.push({
-        id: Date.now(),
-        name,
-        rate,
-        color: $('projColor').value
+    $('pauseBtn').addEventListener('click', () => { clearInterval(timerInterval); timerInterval = null; });
+    $('resetBtn').addEventListener('click', () => {
+        clearInterval(timerInterval); timerInterval = null; seconds = 0; updateTimerDisplay();
     });
 
-    saveData();
-    renderAll();
-    $('projName').value = '';
-    $('projRate').value = '';
-});
+    // ==================== Ajout Projet ====================
+    $('addProject').addEventListener('click', () => {
+        const name = $('projName').value.trim();
+        const rate = parseFloat($('projRate').value);
+        if (!name || !rate) return alert("Nom et taux horaire requis");
 
-// ==================== Ajout Manuel ====================
-$('addManualBtn').addEventListener('click', () => {
-    const projectId = parseInt($('manualProject').value);
-    const hours = parseFloat($('manualHours').value);
-    if (!projectId || !hours) return alert("Projet et durée requis");
-
-    sessions.push({
-        id: Date.now(),
-        projectId,
-        date: $('manualDate').value || new Date().toISOString().split('T')[0],
-        task: $('manualTask').value.trim() || "Prestation",
-        hours,
-        billable: $('manualBillable').value === "true",
-        notes: $('manualNotes').value.trim()
+        projects.push({ id: Date.now(), name, rate, color: $('projColor').value });
+        saveData();
+        renderAll();
+        $('projName').value = '';
+        $('projRate').value = '';
     });
 
-    saveData();
-    renderAll();
-    
-    // Reset form
-    $('manualTask').value = '';
-    $('manualHours').value = '';
-    $('manualNotes').value = '';
-});
+    // ==================== Ajout Manuel ====================
+    $('addManualBtn').addEventListener('click', () => {
+        const projectId = parseInt($('manualProject').value);
+        const hours = parseFloat($('manualHours').value);
+        if (!projectId || !hours) return alert("Projet et durée requis");
 
-// ==================== Tableau Sessions ====================
-function renderSessionsTable(filteredSessions = sessions) {
-    const tbody = $('sessionsTable');
-    tbody.innerHTML = filteredSessions.sort((a,b) => new Date(b.date) - new Date(a.date)).map(s => {
-        const proj = projects.find(p => p.id === s.projectId);
-        const amount = s.billable ? (s.hours * (proj?.rate || 0)).toFixed(0) : '—';
+        sessions.push({
+            id: Date.now(),
+            projectId,
+            date: $('manualDate').value || new Date().toISOString().split('T')[0],
+            task: $('manualTask').value.trim() || "Prestation",
+            hours,
+            notes: $('manualNotes').value.trim()
+        });
+
+        saveData();
+        renderAll();
+        $('manualTask').value = '';
+        $('manualHours').value = '';
+        $('manualNotes').value = '';
+    });
+
+    // ==================== Enregistrer session timer ====================
+    $('saveSessionBtn').addEventListener('click', () => {
+        const projId = parseInt($('timerProject').value);
+        if (!projId || seconds === 0) return alert("Choisissez un projet et démarrez le timer");
+
+        sessions.push({
+            id: Date.now(),
+            projectId: projId,
+            date: new Date().toISOString().split('T')[0],
+            task: "Session chronomètre",
+            hours: seconds / 3600,
+            notes: ""
+        });
+
+        saveData();
+        seconds = 0;
+        updateTimerDisplay();
+        renderAll();
+    });
+
+    // ==================== Historique (rendu responsive) ====================
+    function getFilteredSessions() {
+        const term = $('searchInput').value.toLowerCase();
+        const dateDebut = $('dateDebut').value;
+        const dateFin = $('dateFin').value;
+
+        return sessions.filter(s => {
+            const proj = projects.find(p => p.id === s.projectId);
+            const matchTerm = !term ||
+                (proj && proj.name.toLowerCase().includes(term)) ||
+                (s.task && s.task.toLowerCase().includes(term)) ||
+                (s.notes && s.notes.toLowerCase().includes(term));
+            const matchDate = (!dateDebut || s.date >= dateDebut) && (!dateFin || s.date <= dateFin);
+            return matchTerm && matchDate;
+        });
+    }
+
+    function getSortedSessions(filtered) {
+        return [...filtered].sort((a, b) => {
+            const pA = projects.find(p => p.id === a.projectId);
+            const pB = projects.find(p => p.id === b.projectId);
+            let valA, valB;
+            switch (currentSort.field) {
+                case 'date': valA = a.date; valB = b.date; break;
+                case 'project': valA = pA?.name || ''; valB = pB?.name || ''; break;
+                case 'hours': valA = a.hours; valB = b.hours; break;
+                case 'amount':
+                    valA = a.hours * (pA?.rate || 0);
+                    valB = b.hours * (pB?.rate || 0);
+                    break;
+            }
+            if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+            if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+            return 0;
+        });
+    }
+
+    function renderSessionsView() {
+        const filtered = getFilteredSessions();
+        const sorted = getSortedSessions(filtered);
+
+        // Total filtré
+        const totalH = sorted.reduce((sum, s) => sum + s.hours, 0);
+        const totalR = sorted.reduce((sum, s) => {
+            const p = projects.find(pr => pr.id === s.projectId);
+            return sum + (s.hours * (p?.rate || 0));
+        }, 0);
+        $('filteredTotal').textContent = `${totalH.toFixed(1)}h · ${totalR.toFixed(0)} €`;
+
+        // Rendu cartes mobile
+        let cardsHtml = '';
+        sorted.forEach(s => {
+            const proj = projects.find(p => p.id === s.projectId);
+            const amount = (s.hours * (proj?.rate || 0)).toFixed(0);
+            if (editingId === s.id) {
+                cardsHtml += renderEditingCard(s, proj);
+            } else {
+                cardsHtml += `
+                    <div class="bg-white dark:bg-slate-800 p-4 rounded-2xl shadow">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="font-medium">${s.date}</span>
+                                <span class="ml-2 text-sm text-slate-600 dark:text-slate-300">${proj ? proj.name : 'Supprimé'}</span>
+                            </div>
+                            <span class="font-bold text-emerald-600">${amount} €</span>
+                        </div>
+                        <p class="text-sm mt-1"><span class="text-slate-500">${s.task}</span> · <span class="font-medium">${s.hours.toFixed(2)} h</span></p>
+                        ${s.notes ? `<p class="text-xs text-slate-400 mt-1">${s.notes}</p>` : ''}
+                        <div class="flex gap-3 mt-3 justify-end">
+                            <button onclick="window.editSession(${s.id})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-pen"></i></button>
+                            <button onclick="window.duplicateSession(${s.id})" class="text-slate-500 hover:text-slate-700"><i class="fas fa-copy"></i></button>
+                            <button onclick="window.deleteSession(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>`;
+            }
+        });
+        $('sessionsCards').innerHTML = cardsHtml;
+
+        // Rendu tableau desktop
+        let tableHtml = '';
+        sorted.forEach(s => {
+            const proj = projects.find(p => p.id === s.projectId);
+            const amount = (s.hours * (proj?.rate || 0)).toFixed(0);
+            if (editingId === s.id) {
+                tableHtml += renderEditingRow(s, proj);
+            } else {
+                tableHtml += `
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td class="py-3 px-4">${s.date}</td>
+                        <td class="py-3 px-4">${proj ? proj.name : 'Supprimé'}</td>
+                        <td class="py-3 px-4">${s.task}</td>
+                        <td class="py-3 px-4 text-right font-medium">${s.hours.toFixed(2)}</td>
+                        <td class="py-3 px-4 text-right font-bold text-emerald-600">${amount} €</td>
+                        <td class="py-3 px-4 text-xs text-slate-500 max-w-[150px] truncate">${s.notes || ''}</td>
+                        <td class="py-3 px-4 text-center">
+                            <div class="flex gap-2 justify-center">
+                                <button onclick="window.editSession(${s.id})" class="text-blue-500 hover:text-blue-700"><i class="fas fa-pen"></i></button>
+                                <button onclick="window.duplicateSession(${s.id})" class="text-slate-500 hover:text-slate-700"><i class="fas fa-copy"></i></button>
+                                <button onclick="window.deleteSession(${s.id})" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </td>
+                    </tr>`;
+            }
+        });
+        $('sessionsTable').innerHTML = tableHtml;
+    }
+
+    // Ligne d'édition (desktop)
+    function renderEditingRow(session, project) {
         return `
-            <tr class="hover:bg-slate-50 dark:hover:bg-slate-800/50">
-                <td class="py-3">${s.date}</td>
-                <td>${proj ? proj.name : 'Supprimé'}</td>
-                <td>${s.task}</td>
-                <td class="text-right font-medium">${s.hours.toFixed(2)}</td>
-                <td class="text-right ${s.billable ? 'text-emerald-600' : 'text-slate-400'}">${amount} €</td>
-                <td class="text-xs text-slate-500">${s.notes || ''}</td>
-                <td>
-                    <button onclick="deleteSession(${s.id})" class="text-red-500 hover:text-red-700">🗑</button>
+            <tr class="bg-blue-50 dark:bg-slate-700/50">
+                <td class="py-3 px-4">${session.date}</td>
+                <td class="py-3 px-4">${project ? project.name : ''}</td>
+                <td class="py-3 px-4"><input id="editTask" value="${escapeHtml(session.task)}" class="w-full px-2 py-1 rounded border"></td>
+                <td class="py-3 px-4"><input id="editHours" type="number" step="0.25" value="${session.hours}" class="w-20 px-2 py-1 rounded border text-right"></td>
+                <td class="py-3 px-4"></td>
+                <td class="py-3 px-4"><input id="editNotes" value="${escapeHtml(session.notes || '')}" class="w-full px-2 py-1 rounded border"></td>
+                <td class="py-3 px-4 text-center">
+                    <button onclick="window.saveEdit(${session.id})" class="text-emerald-500 hover:text-emerald-700 mr-2"><i class="fas fa-check"></i></button>
+                    <button onclick="window.cancelEdit()" class="text-red-500 hover:text-red-700"><i class="fas fa-times"></i></button>
                 </td>
             </tr>`;
-    }).join('');
-}
-
-// ==================== Delete ====================
-window.deleteProject = function(id) {
-    if (confirm("Supprimer ce projet et toutes ses sessions ?")) {
-        projects = projects.filter(p => p.id !== id);
-        sessions = sessions.filter(s => s.projectId !== id);
-        saveData();
-        renderAll();
     }
-};
 
-window.deleteSession = function(id) {
-    if (confirm("Supprimer cette prestation ?")) {
-        sessions = sessions.filter(s => s.id !== id);
-        saveData();
-        renderAll();
+    // Carte d'édition (mobile)
+    function renderEditingCard(session, project) {
+        return `
+            <div class="bg-blue-50 dark:bg-slate-700/50 p-4 rounded-2xl shadow">
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-xs text-slate-500">Tâche</label>
+                        <input id="editTask" value="${escapeHtml(session.task)}" class="w-full px-2 py-1 rounded border">
+                    </div>
+                    <div>
+                        <label class="text-xs text-slate-500">Heures</label>
+                        <input id="editHours" type="number" step="0.25" value="${session.hours}" class="w-full px-2 py-1 rounded border">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-xs text-slate-500">Notes</label>
+                        <input id="editNotes" value="${escapeHtml(session.notes || '')}" class="w-full px-2 py-1 rounded border">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-3">
+                    <button onclick="window.saveEdit(${session.id})" class="text-emerald-500 font-medium">Enregistrer</button>
+                    <button onclick="window.cancelEdit()" class="text-red-500 font-medium">Annuler</button>
+                </div>
+            </div>`;
     }
-};
 
-// Recherche
-$('searchInput').addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase();
-    const filtered = sessions.filter(s => {
-        const proj = projects.find(p => p.id === s.projectId);
-        return (proj && proj.name.toLowerCase().includes(term)) || 
-               (s.task && s.task.toLowerCase().includes(term)) ||
-               (s.notes && s.notes.toLowerCase().includes(term));
+    function escapeHtml(str) {
+        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+
+    // ==================== Actions sur les sessions ====================
+    window.editSession = function(id) {
+        editingId = id;
+        renderSessionsView();
+    };
+
+    window.saveEdit = function(id) {
+        const task = document.getElementById('editTask')?.value.trim();
+        const hours = parseFloat(document.getElementById('editHours')?.value);
+        const notes = document.getElementById('editNotes')?.value.trim();
+
+        const session = sessions.find(s => s.id === id);
+        if (session && task && !isNaN(hours)) {
+            session.task = task;
+            session.hours = hours;
+            session.notes = notes;
+            saveData();
+        }
+        editingId = null;
+        renderAll();
+    };
+
+    window.cancelEdit = function() {
+        editingId = null;
+        renderSessionsView();
+    };
+
+    window.deleteSession = function(id) {
+        if (confirm("Supprimer cette prestation ?")) {
+            sessions = sessions.filter(s => s.id !== id);
+            saveData();
+            renderAll();
+        }
+    };
+
+    window.duplicateSession = function(id) {
+        const original = sessions.find(s => s.id === id);
+        if (original) {
+            const copy = { ...original, id: Date.now(), date: new Date().toISOString().split('T')[0] };
+            sessions.push(copy);
+            saveData();
+            renderAll();
+        }
+    };
+
+    window.deleteProject = function(id) {
+        if (confirm("Supprimer ce projet et toutes ses sessions ?")) {
+            projects = projects.filter(p => p.id !== id);
+            sessions = sessions.filter(s => s.projectId !== id);
+            saveData();
+            renderAll();
+        }
+    };
+
+    // ==================== Filtres & Tri ====================
+    $('searchInput').addEventListener('input', () => {
+        editingId = null;
+        renderSessionsView();
     });
-    renderSessionsTable(filtered);
-});
-
-// Enregistrer session timer
-$('saveSessionBtn').addEventListener('click', () => {
-    const projId = parseInt($('timerProject').value);
-    if (!projId || seconds === 0) return alert("Choisissez un projet et démarrez le timer");
-
-    sessions.push({
-        id: Date.now(),
-        projectId: projId,
-        date: new Date().toISOString().split('T')[0],
-        task: "Session chronomètre",
-        hours: seconds / 3600,
-        billable: true,
-        notes: ""
+    $('dateDebut').addEventListener('change', () => {
+        editingId = null;
+        renderSessionsView();
+    });
+    $('dateFin').addEventListener('change', () => {
+        editingId = null;
+        renderSessionsView();
     });
 
-    saveData();
-    seconds = 0;
-    updateTimerDisplay();
+    // Tri sur clic des en-têtes (desktop uniquement, mais on peut laisser)
+    document.querySelector('#sessionsTable')?.parentElement?.addEventListener('click', (e) => {
+        const th = e.target.closest('th[data-sort]');
+        if (!th) return;
+        const field = th.dataset.sort;
+        if (currentSort.field === field) {
+            currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+        } else {
+            currentSort.field = field;
+            currentSort.direction = 'asc';
+        }
+        renderSessionsView();
+    });
+
+    // ==================== Export CSV (filtré) ====================
+    $('exportBtn').addEventListener('click', () => {
+        const filtered = getFilteredSessions();
+        let csv = "Date;Projet;Prestation;Heures;Montant;Notes\n";
+        filtered.forEach(s => {
+            const p = projects.find(pr => pr.id === s.projectId);
+            csv += `${s.date};${p ? p.name : ''};${s.task};${s.hours.toFixed(2)};${(s.hours * (p?.rate || 0)).toFixed(0)};${s.notes || ''}\n`;
+        });
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv" });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `worktrack_${new Date().toISOString().slice(0, 10)}.csv`;
+        link.click();
+    });
+
+    // ==================== Reset ====================
+    $('resetAllBtn').addEventListener('click', () => {
+        if (confirm("Tout supprimer ?")) {
+            localStorage.clear();
+            location.reload();
+        }
+    });
+
+    // ==================== Thème sombre ====================
+    $('themeToggle').addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    });
+
+    // ==================== Init ====================
+    loadData();
     renderAll();
-});
-
-// Theme
-$('themeToggle').addEventListener('click', () => {
-    document.documentElement.classList.toggle('dark');
-    localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
-});
-
-// Export
-$('exportBtn').addEventListener('click', () => {
-    let csv = "Date;Projet;Prestation;Heures;Billable;Montant;Notes\n";
-    sessions.forEach(s => {
-        const p = projects.find(pr => pr.id === s.projectId);
-        csv += `${s.date};${p ? p.name : ''};${s.task};${s.hours};${s.billable};${s.billable ? s.hours*(p?.rate||0) : 0};${s.notes||''}\n`;
-    });
-    const blob = new Blob(["\uFEFF" + csv], {type: "text/csv"});
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `worktrack_${new Date().toISOString().slice(0,10)}.csv`;
-    link.click();
-});
-
-// Reset
-$('resetAllBtn').addEventListener('click', () => {
-    if (confirm("Tout supprimer ?")) {
-        localStorage.clear();
-        location.reload();
-    }
-});
-
-// Init
-loadData();
-renderAll();
-updateTimerDisplay();
+    updateTimerDisplay();
+})();
 </script>
 </body>
 </html>
