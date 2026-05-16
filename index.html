@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>WorkTrack Pro | Suivi d'heures & facturation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            background: #f0f2f5;
+            font-family: 'Inter', sans-serif;
+            color: #1e293b;
+            padding: 2rem 1rem;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+        .header p {
+            color: #5b6e8c;
+        }
+        /* Cartes */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .stat-card h3 {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #5b6e8c;
+        }
+        .stat-card .value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e3c72;
+        }
+        /* Formulaire projet */
+        .section {
+            background: white;
+            border-radius: 28px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .section h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+        .form-group {
+            flex: 1 1 180px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+        .form-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            color: #5b6e8c;
+        }
+        input, select, button {
+            padding: 0.7rem 1rem;
+            border-radius: 18px;
+            border: 1px solid #cfdfed;
+            font-size: 0.9rem;
+        }
+        button {
+            background: #1e3c72;
+            color: white;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #2a5298;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        /* Tableau des projets */
+        .project-list {
+            margin-top: 1rem;
+        }
+        .project-item {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .project-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .project-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 20px;
+        }
+        .project-name {
+            font-weight: 600;
+        }
+        .project-rate {
+            font-size: 0.8rem;
+            color: #2a5298;
+        }
+        .project-actions button {
+            background: none;
+            color: #dc2626;
+            font-size: 1rem;
+            padding: 0.2rem 0.5rem;
+        }
+        /* Formulaire session */
+        .session-form {
+            margin-top: 1rem;
+        }
+        /* Tableau sessions */
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .sessions-table th, .sessions-table td {
+            text-align: left;
+            padding: 0.8rem 0.5rem;
+            border-bottom: 1px solid #e9eef3;
+        }
+        .sessions-table th {
+            background: #f8fafc;
+        }
+        .delete-session {
+            color: #dc2626;
+            cursor: pointer;
+        }
+        .export-btn {
+            margin-top: 1rem;
+            background: #28a745;
+        }
+        .chart-container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        @media (max-width: 700px) {
+            body { padding: 1rem; }
+            .form-row { flex-direction: column; }
+            .project-item { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📊 WorkTrack Pro</h1>
+        <p>Suivez vos heures, vos projets et vos revenus</p>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="stats-grid">
+        <div class="stat-card"><h3>Total heures</h3><div class="value" id="totalHours">0</div></div>
+        <div class="stat-card"><h3>Total revenu</h3><div class="value" id="totalRevenue">0 €</div></div>
+        <div class="stat-card"><h3>Projets actifs</h3><div class="value" id="projectCount">0</div></div>
+        <div class="stat-card"><h3>Sessions</h3><div class="value" id="sessionCount">0</div></div>
+    </div>
+
+    <!-- Gestion des projets -->
+    <div class="section">
+        <h2><i class="fas fa-folder-open"></i> Projets</h2>
+        <div class="form-row">
+            <div class="form-group"><label>Nom du projet</label><input type="text" id="projectName" placeholder="Ex: Site vitrine"></div>
+            <div class="form-group"><label>Taux horaire (€)</label><input type="number" id="projectRate" step="0.01" placeholder="50"></div>
+            <div class="form-group"><label>Couleur</label><input type="color" id="projectColor" value="#1e3c72"></div>
+            <div class="form-group"><button id="addProjectBtn">➕ Ajouter projet</button></div>
+        </div>
+        <div id="projectList" class="project-list"></div>
+    </div>
+
+    <!-- Ajout d'une session de travail -->
+    <div class="section">
+        <h2><i class="fas fa-clock"></i> Ajouter une session</h2>
+        <div class="form-row session-form">
+            <div class="form-group"><label>Projet</label><select id="sessionProject"></select></div>
+            <div class="form-group"><label>Date</label><input type="date" id="sessionDate"></div>
+            <div class="form-group"><label>Durée (heures)</label><input type="number" id="sessionHours" step="0.5" placeholder="2.5"></div>
+            <div class="form-group"><label>Notes</label><input type="text" id="sessionNotes" placeholder="Optionnel"></div>
+            <div class="form-group"><button id="addSessionBtn">✅ Enregistrer</button></div>
+        </div>
+    </div>
+
+    <!-- Graphique & tableau des sessions -->
+    <div class="section">
+        <h2><i class="fas fa-chart-pie"></i> Répartition des heures</h2>
+        <div class="chart-container"><canvas id="hoursChart" width="400" height="250"></canvas></div>
+    </div>
+
+    <div class="section">
+        <h2><i class="fas fa-list"></i> Historique des sessions</h2>
+        <div style="overflow-x: auto;">
+            <table class="sessions-table" id="sessionsTable">
+                <thead><tr><th>Date</th><th>Projet</th><th>Durée (h)</th><th>Revenu</th><th>Notes</th><th></th></tr></thead>
+                <tbody id="sessionsList"></tbody>
+            </table>
+        </div>
+        <button id="exportCsvBtn" class="export-btn"><i class="fas fa-download"></i> Exporter en CSV</button>
+    </div>
+</div>
+
+<script>
+    // Données
+    let projects = [];
+    let sessions = [];
+    let chartInstance = null;
+
+    // DOM elements
+    const projectListDiv = document.getElementById('projectList');
+    const sessionProjectSelect = document.getElementById('sessionProject');
+    const sessionDateInput = document.getElementById('sessionDate');
+    const sessionHoursInput = document.getElementById('sessionHours');
+    const sessionNotesInput = document.getElementById('sessionNotes');
+    const addProjectBtn = document.getElementById('addProjectBtn');
+    const addSessionBtn = document.getElementById('addSessionBtn');
+    const sessionsTbody = document.getElementById('sessionsList');
+    const totalHoursSpan = document.getElementById('totalHours');
+    const totalRevenueSpan = document.getElementById('totalRevenue');
+    const projectCountSpan = document.getElementById('projectCount');
+    const sessionCountSpan = document.getElementById('sessionCount');
+    const exportBtn = document.getElementById('exportCsvBtn');
+
+    // Charger depuis localStorage
+    function loadData() {
+        const storedProjects = localStorage.getItem('worktrack_projects');
+        const storedSessions = localStorage.getItem('worktrack_sessions');
+        if(storedProjects) projects = JSON.parse(storedProjects);
+        else {
+            projects = [
+                { id: Date.now()+1, name: "Développement web", rate: 50, color: "#1e3c72" },
+                { id: Date.now()+2, name: "Consultation", rate: 80, color: "#2a5298" }
+            ];
+        }
+        if(storedSessions) sessions = JSON.parse(storedSessions);
+        else {
+            const today = new Date().toISOString().slice(0,10);
+            sessions = [
+                { id: Date.now()+100, projectId: projects[0].id, date: today, hours: 3.5, notes: "Avancée frontend" },
+                { id: Date.now()+101, projectId: projects[1].id, date: today, hours: 2, notes: "Réunion client" }
+            ];
+        }
+        renderAll();
+    }
+
+    function saveData() {
+        localStorage.setItem('worktrack_projects', JSON.stringify(projects));
+        localStorage.setItem('worktrack_sessions', JSON.stringify(sessions));
+    }
+
+    // Ajouter projet
+    function addProject() {
+        const name = document.getElementById('projectName').value.trim();
+        const rate = parseFloat(document.getElementById('projectRate').value);
+        const color = document.getElementById('projectColor').value;
+        if(!name) { alert("Nom du projet requis"); return; }
+        if(isNaN(rate) || rate <= 0) { alert("Taux horaire valide requis"); return; }
+        const newProject = { id: Date.now(), name, rate, color };
+        projects.push(newProject);
+        saveData();
+        renderAll();
+        document.getElementById('projectName').value = '';
+        document.getElementById('projectRate').value = '';
+    }
+
+    // Supprimer projet
+    function deleteProject(id) {
+        if(confirm("Supprimer ce projet ? Toutes ses sessions seront également supprimées.")) {
+            projects = projects.filter(p => p.id !== id);
+            sessions = sessions.filter(s => s.projectId !== id);
+            saveData();
+            renderAll();
+        }
+    }
+
+    // Ajouter session
+    function addSession() {
+        const projectId = parseInt(sessionProjectSelect.value);
+        const date = sessionDateInput.value;
+        const hours = parseFloat(sessionHoursInput.value);
+        const notes = sessionNotesInput.value.trim();
+        if(!projectId) { alert("Choisissez un projet"); return; }
+        if(!date) { alert("Date requise"); return; }
+        if(isNaN(hours) || hours <= 0) { alert("Durée valide (>0)"); return; }
+        const newSession = { id: Date.now(), projectId, date, hours, notes };
+        sessions.push(newSession);
+        saveData();
+        renderAll();
+        sessionHoursInput.value = '';
+        sessionNotesInput.value = '';
+        sessionDateInput.value = new Date().toISOString().slice(0,10);
+    }
+
+    // Supprimer session
+    function deleteSession(id) {
+        sessions = sessions.filter(s => s.id !== id);
+        saveData();
+        renderAll();
+    }
+
+    // Rendu des projets (select et liste)
+    function renderProjects() {
+        // Select pour sessions
+        sessionProjectSelect.innerHTML = '<option value="">-- Choisir un projet --</option>';
+        projects.forEach(p => {
+            const option = document.createElement('option');
+            option.value = p.id;
+            option.textContent = `${p.name} (${p.rate}€/h)`;
+            sessionProjectSelect.appendChild(option);
+        });
+        // Liste des projets dans l'interface
+        if(projects.length === 0) {
+            projectListDiv.innerHTML = '<p style="color:#888;">Aucun projet. Créez-en un.</p>';
+            projectCountSpan.innerText = '0';
+            return;
+        }
+        projectCountSpan.innerText = projects.length;
+        projectListDiv.innerHTML = '';
+        projects.forEach(p => {
+            const div = document.createElement('div');
+            div.className = 'project-item';
+            div.innerHTML = `
+                <div class="project-info">
+                    <div class="project-color" style="background:${p.color};"></div>
+                    <div><span class="project-name">${escapeHtml(p.name)}</span> <span class="project-rate">${p.rate}€/h</span></div>
+                </div>
+                <div class="project-actions">
+                    <button class="delete-project" data-id="${p.id}"><i class="fas fa-trash-alt"></i> Supprimer</button>
+                </div>
+            `;
+            projectListDiv.appendChild(div);
+        });
+        document.querySelectorAll('.delete-project').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const id = parseInt(btn.getAttribute('data-id'));
+                deleteProject(id);
+            });
+        });
+    }
+
+    function renderSessions() {
+        if(sessions.length === 0) {
+            sessionsTbody.innerHTML = '<tr><td colspan="6">Aucune session enregistrée.</td></tr>';
+            sessionCountSpan.innerText = '0';
+            return;
+        }
+        sessionCountSpan.innerText = sessions.length;
+        let totalH = 0;
+        let totalRev = 0;
+        const rows = [];
+        sessions.forEach(s => {
+            const project = projects.find(p => p.id === s.projectId);
+            const projectName = project ? project.name : 'Projet supprimé';
+            const rate = project ? project.rate : 0;
+            const revenue = s.hours * rate;
+            totalH += s.hours;
+            totalRev += revenue;
+            rows.push(`
+                <tr>
+                    <td>${s.date}</td>
+                    <td>${escapeHtml(projectName)}</td>
+                    <td>${s.hours}</td>
+                    <td>${revenue.toFixed(2)} €</td>
+                    <td>${escapeHtml(s.notes || '—')}</td>
+                    <td><i class="fas fa-trash-alt delete-session" data-id="${s.id}" style="cursor:pointer;"></i></td>
+                </tr>
+            `);
+        });
+        sessionsTbody.innerHTML = rows.join('');
+        totalHoursSpan.innerText = totalH.toFixed(1);
+        totalRevenueSpan.innerText = totalRev.toFixed(2) + ' €';
+        // attacher les delete
+        document.querySelectorAll('.delete-session').forEach(el => {
+            el.addEventListener('click', (e) => {
+                const id = parseInt(el.getAttribute('data-id'));
+                deleteSession(id);
+            });
+        });
+    }
+
+    function updateChart() {
+        const ctx = document.getElementById('hoursChart').getContext('2d');
+        if(chartInstance) chartInstance.destroy();
+        const projectHours = {};
+        projects.forEach(p => { projectHours[p.id] = 0; });
+        sessions.forEach(s => { if(projectHours[s.projectId] !== undefined) projectHours[s.projectId] += s.hours; });
+        const labels = [];
+        const data = [];
+        const bgColors = [];
+        projects.forEach(p => {
+            if(projectHours[p.id] > 0) {
+                labels.push(p.name);
+                data.push(projectHours[p.id]);
+                bgColors.push(p.color);
+            }
+        });
+        if(labels.length === 0) {
+            chartInstance = new Chart(ctx, { type: 'doughnut', data: { labels: ['Aucune donnée'], datasets: [{ data: [1], backgroundColor: ['#ccc'] }] }, options: { plugins: { legend: { position: 'bottom' } } } });
+            return;
+        }
+        chartInstance = new Chart(ctx, {
+            type: 'doughnut',
+            data: { labels, datasets: [{ data, backgroundColor: bgColors, borderWidth: 0, hoverOffset: 8 }] },
+            options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(1)} h` } } } }
+        });
+    }
+
+    function escapeHtml(str) { return str.replace(/[&<>]/g, function(m){ if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
+
+    function exportCSV() {
+        let csv = "Date,Projet,Durée (heures),Revenu (€),Notes\n";
+        sessions.forEach(s => {
+            const project = projects.find(p => p.id === s.projectId);
+            const projectName = project ? project.name : "Projet supprimé";
+            const revenue = project ? (s.hours * project.rate).toFixed(2) : "0";
+            csv += `"${s.date}","${projectName}",${s.hours},${revenue},"${(s.notes || "").replace(/"/g, '""')}"\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        link.href = url;
+        link.setAttribute("download", "worktrack_sessions.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+    }
+
+    function renderAll() {
+        renderProjects();
+        renderSessions();
+        updateChart();
+        if(sessionDateInput.value === '') sessionDateInput.value = new Date().toISOString().slice(0,10);
+    }
+
+    addProjectBtn.addEventListener('click', addProject);
+    addSessionBtn.addEventListener('click', addSession);
+    exportBtn.addEventListener('click', exportCSV);
+
+    loadData();
+</script>
+</body>
+</html>
